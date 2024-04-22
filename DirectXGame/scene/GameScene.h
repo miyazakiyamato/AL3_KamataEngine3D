@@ -7,9 +7,11 @@
 #include "Sprite.h"
 #include "ViewProjection.h"
 #include "WorldTransform.h"
+#include "DebugCamera.h"
+#include "Player.h"
 
 /// <summary>
-/// ゲームシーン
+/// ゲームシーン#
 /// </summary>
 class GameScene {
 
@@ -43,7 +45,17 @@ private: // メンバ変数
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Audio* audio_ = nullptr;
-
+	//テクスチャーハンドル
+	uint32_t textureHandle_ = 0;
+	//3Dモデル
+	Model* model_ = nullptr;
+	//
+	WorldTransform worldTransform_;
+	ViewProjection viewProjection_;
+	//デバッグカメラ
+	DebugCamera* debugCamera_ = nullptr;
+	//
+	Player* player_ = nullptr;
 	/// <summary>
 	/// ゲームシーン用
 	/// </summary>

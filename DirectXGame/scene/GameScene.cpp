@@ -1,19 +1,45 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 #include <cassert>
+#include "AxisIndicator.h"
 
 GameScene::GameScene() {}
 
-GameScene::~GameScene() {}
+GameScene::~GameScene() {
+	//
+	delete model_;
+	//
+	delete debugCamera_;
+	//
+	delete player_;
+}
 
 void GameScene::Initialize() {
 
 	dxCommon_ = DirectXCommon::GetInstance();
 	input_ = Input::GetInstance();
 	audio_ = Audio::GetInstance();
+	//
+	textureHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
+	model_ = Model::Create();
+	worldTransform_.Initialize();
+	viewProjection_.Initialize();
+	//
+	debugCamera_ = new DebugCamera(1280, 720);
+	//
+	AxisIndicator::GetInstance()->SetVisible(true);
+	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
+	//
+	player_ = new Player(); 
+
+	player_->Initialize(model_, textureHandle_);
 }
 
-void GameScene::Update() {}
+void GameScene::Update() { 
+	debugCamera_->Update();
+	//
+	player_->Update();
+}
 
 void GameScene::Draw() {
 
@@ -41,7 +67,14 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	/// </summary>
+	player_->Draw(viewProjection_);
+	//
+	
+	//デバッグ表示
+#ifdef _DEBUG
+	
 
+#endif
 	// 3Dオブジェクト描画後処理
 	Model::PostDraw();
 #pragma endregion
