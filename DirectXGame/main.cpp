@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ゲームウィンドウの作成
 	win = WinApp::GetInstance();
 	win->CreateGameWindow(L"LD2B_07_ミヤザキ_ヤマト_AL3");
-	//
+
 	// DirectX初期化処理
 	dxCommon = DirectXCommon::GetInstance();
 	dxCommon->Initialize(win);
@@ -60,7 +60,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// ゲームシーンの初期化
 	gameScene = new GameScene();
 	gameScene->Initialize();
-
 	// メインループ
 	while (true) {
 		// メッセージ処理
