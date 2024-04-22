@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "AxisIndicator.h"
+#include "MyMtMatrix.h"
 
 GameScene::GameScene() {}
 
@@ -39,6 +40,21 @@ void GameScene::Update() {
 	debugCamera_->Update();
 	//
 	player_->Update();
+	// デバッグ表示
+#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_P)) {
+		isDebugCameraActive_ = !isDebugCameraActive_;
+	}
+#endif
+	if (isDebugCameraActive_) {
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		//ビュープロジェクション
+		viewProjection_.TransferMatrix();
+	} else {
+		viewProjection_.UpdateMatrix();
+	}
 }
 
 void GameScene::Draw() {
