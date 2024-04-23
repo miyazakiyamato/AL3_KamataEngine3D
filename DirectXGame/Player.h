@@ -31,4 +31,7 @@ private:
 	Input* input_ = nullptr;
 	//
 	float inputFloat3[3] = {0, 0, 0};
+
+	//関数
+	void Rotate();
 };

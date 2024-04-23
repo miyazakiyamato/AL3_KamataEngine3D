@@ -28,8 +28,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma region 汎用機能初期化
 	// ImGuiの初期化
-	ImGuiManager* imguiManager = ImGuiManager::GetInstance();
-	imguiManager->Initialize(win, dxCommon);
+	ImGuiManager* imGuiManager = ImGuiManager::GetInstance();
+	imGuiManager->Initialize(win, dxCommon);
 
 	// 入力の初期化
 	input = Input::GetInstance();
@@ -68,7 +68,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 
 		// ImGui受付開始
-		imguiManager->Begin();
+		imGuiManager->Begin();
 		// 入力関連の毎フレーム処理
 		input->Update();
 		// ゲームシーンの毎フレーム処理
@@ -76,7 +76,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// 軸表示の更新
 		axisIndicator->Update();
 		// ImGui受付終了
-		imguiManager->End();
+		imGuiManager->End();
 
 		// 描画開始
 		dxCommon->PreDraw();
@@ -87,7 +87,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		// プリミティブ描画のリセット
 		primitiveDrawer->Reset();
 		// ImGui描画
-		imguiManager->Draw();
+		imGuiManager->Draw();
 		// 描画終了
 		dxCommon->PostDraw();
 	}
@@ -98,7 +98,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	Model::StaticFinalize();
 	audio->Finalize();
 	// ImGui解放
-	imguiManager->Finalize();
+	imGuiManager->Finalize();
 
 	// ゲームウィンドウの破棄
 	win->TerminateGameWindow();
