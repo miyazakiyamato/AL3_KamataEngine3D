@@ -30,6 +30,18 @@ void Player::Update() {
 	} else if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
+	//
+	Rotate();
+	//
+#ifdef _DEBUG
+	ImGui::Begin("Player");
+	inputFloat3[0] = worldTransform_.translation_.x;
+	inputFloat3[1] = worldTransform_.translation_.y;
+	inputFloat3[2] = worldTransform_.translation_.z;
+	ImGui::SliderFloat3("SliderFloat3", inputFloat3, -15.0f, 15.0f);
+	worldTransform_.translation_ = {inputFloat3[0], inputFloat3[1], inputFloat3[2]};
+	ImGui::End();
+#endif
 	//移動限界座標
 	const float kMoveLimitX = 34.f;
 	const float kMoveLimitY = 18.5f;
@@ -41,16 +53,19 @@ void Player::Update() {
 	//
 	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move);
 	//
-#ifdef _DEBUG
-	ImGui::Begin("Player");
-	ImGui::SliderFloat3("SliderFloat3", inputFloat3,-15.0f,15.0f);
-	ImGui::End();
-#endif
-	//worldTransform_.translation_ = {inputFloat3[0], inputFloat3[1], inputFloat3[2]};
 	worldTransform_.matWorld_ = MyMtMatrix::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	model_->Draw(worldTransform_, viewProjection, textureHandle_); }
+
+void Player::Rotate() { 
+	const float kRotSpeed = 0.02f;
+	//
+	if (input_->PushKey(DIK_A)) {
+		worldTransform_.rotation_.y -= kRotSpeed;
+	} else if (input_->PushKey(DIK_D)) {
+		worldTransform_.rotation_.y += kRotSpeed;
+	}
 }
 
