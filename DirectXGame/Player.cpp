@@ -30,6 +30,12 @@ void Player::Update() {
 	} else if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
+	if (input_->PushKey(DIK_SPACE)) {
+		Attack();
+	} 
+	if (bullet_) {
+		bullet_->Update();	
+	}
 	//
 	Rotate();
 	//
@@ -57,7 +63,17 @@ void Player::Update() {
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_); }
+	model_->Draw(worldTransform_, viewProjection, textureHandle_);
+	if (bullet_) {
+		bullet_->Draw(viewProjection);
+	}
+}
+
+void Player::Attack() { 
+	PlayerBullet* newBullet = new PlayerBullet();
+	newBullet->Initialize(model_, worldTransform_.translation_);
+	bullet_ = newBullet;
+}
 
 void Player::Rotate() { 
 	const float kRotSpeed = 0.02f;
