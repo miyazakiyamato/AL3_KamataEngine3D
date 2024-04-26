@@ -3,9 +3,13 @@
 #include "WorldTransform.h"
 #include "Input.h"
 #include "PlayerBullet.h"
+#include <list>
 
 class Player {
 public:
+	Player(){};
+
+	~Player();
 	/// <summary>
 	/// 初期化
 	/// </summary>
@@ -33,7 +37,7 @@ private:
 	//
 	float inputFloat3[3] = {0, 0, 0};
 	//
-	PlayerBullet* bullet_ = nullptr;
+	std::list<PlayerBullet*> bullets_;
 	//関数
 	void Attack();
 	void Rotate();
