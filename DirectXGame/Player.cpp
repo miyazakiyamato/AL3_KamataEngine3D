@@ -4,6 +4,12 @@
 #include "MyMtVector3.h"
 #include "ImGuiManager.h"
 
+Player::~Player() {
+	for (PlayerBullet* bullet : bullets_) {
+		delete bullet;
+	}
+}
+
 void Player::Initialize(Model* model, uint32_t textureHandle) {
 	assert(model);
 	model_ = model;
@@ -30,11 +36,9 @@ void Player::Update() {
 	} else if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
-	if (input_->PushKey(DIK_SPACE)) {
-		Attack();
-	} 
-	if (bullet_) {
-		bullet_->Update();	
+	Attack();
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();	
 	}
 	//
 	Rotate();
@@ -64,15 +68,19 @@ void Player::Update() {
 
 void Player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-	if (bullet_) {
-		bullet_->Draw(viewProjection);
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Draw(viewProjection);
 	}
 }
 
-void Player::Attack() { 
-	PlayerBullet* newBullet = new PlayerBullet();
-	newBullet->Initialize(model_, worldTransform_.translation_);
-	bullet_ = newBullet;
+void Player::Attack() {
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// DirectX::XMFLOAT3 position = worldTransform_.translation_;
+
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+		bullets_.push_back(newBullet);
+	}
 }
 
 void Player::Rotate() { 
