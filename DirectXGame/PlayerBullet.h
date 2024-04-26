@@ -1,15 +1,13 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
-#include "Input.h"
-#include "PlayerBullet.h"
 
-class Player {
+class PlayerBullet {
 public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model,const Vector3& position );
 
 	/// <summary>
 	/// 毎フレーム処理
@@ -22,20 +20,10 @@ public:
 	void Draw(ViewProjection& viewProjection);
 
 private:
-	//ワールド変換データ
+	// ワールド変換データ
 	WorldTransform worldTransform_;
-	//モデル
+	// モデル
 	Model* model_ = nullptr;
-	//テクスチャハンドル
+	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
-	//キー入力
-	Input* input_ = nullptr;
-	//
-	float inputFloat3[3] = {0, 0, 0};
-	//
-	PlayerBullet* bullet_ = nullptr;
-	//関数
-	void Attack();
-	void Rotate();
-	
 };
