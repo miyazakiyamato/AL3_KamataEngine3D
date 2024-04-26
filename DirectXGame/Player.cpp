@@ -36,9 +36,7 @@ void Player::Update() {
 	} else if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
-	if (input_->PushKey(DIK_SPACE)) {
-		Attack();
-	} 
+	Attack();
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();	
 	}
@@ -76,11 +74,13 @@ void Player::Draw(ViewProjection& viewProjection) {
 }
 
 void Player::Attack() {
-	//DirectX::XMFLOAT3 position = worldTransform_.translation_;
+	if (input_->TriggerKey(DIK_SPACE)) {
+		// DirectX::XMFLOAT3 position = worldTransform_.translation_;
 
-	PlayerBullet* newBullet = new PlayerBullet();
-	newBullet->Initialize(model_, worldTransform_.translation_);
-	bullets_.push_back(newBullet);
+		PlayerBullet* newBullet = new PlayerBullet();
+		newBullet->Initialize(model_, worldTransform_.translation_);
+		bullets_.push_back(newBullet);
+	}
 }
 
 void Player::Rotate() { 
