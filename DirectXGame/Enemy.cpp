@@ -14,14 +14,28 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 
 void Enemy::Update() {
 	// キャラ移動
-	Vector3 move = {0, 0, 0};
-	//
 	const float kCharacterSpeed = 0.2f;
+	switch (phase_) {
+	case Phase::Approach:
+	default:
+		ApproachUpdate({0.0f, 0.0f, -kCharacterSpeed});
+		break;
+	case Phase::Leave:
+		LeaveUpdate({-kCharacterSpeed, kCharacterSpeed, 0.0f});
+		break;
+	}
 
-	move.z -= kCharacterSpeed;
-
-	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move);
 	worldTransform_.UpdateMatrix();
 }
 
 void Enemy::Draw(ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, textureHandle_); }
+
+void Enemy::ApproachUpdate(const Vector3& move) {
+	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move);
+	//
+	if (worldTransform_.translation_.z < 0.0f) {
+		phase_ = Phase::Leave;
+	}
+}
+
+void Enemy::LeaveUpdate(const Vector3& move) { worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move); }

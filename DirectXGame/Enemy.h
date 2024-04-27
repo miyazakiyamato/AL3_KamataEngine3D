@@ -2,6 +2,11 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
+enum class Phase {
+	Approach, // 接近する
+	Leave,    // 離脱する
+};
+
 class Enemy {
 public:
 	Enemy(){};
@@ -28,4 +33,9 @@ private:
 	Model* model_ = nullptr;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
+	//フェーズ
+	Phase phase_ = Phase::Approach;
+	//関数
+	void ApproachUpdate(const Vector3& move);
+	void LeaveUpdate(const Vector3& move);
 };
