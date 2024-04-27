@@ -36,6 +36,8 @@ void Player::Update() {
 	} else if (input_->PushKey(DIK_DOWN)) {
 		move.y -= kCharacterSpeed;
 	}
+	Rotate();
+
 	Attack();
 	for (PlayerBullet* bullet : bullets_) {
 		bullet->Update();	
@@ -47,9 +49,6 @@ void Player::Update() {
 		}
 		return false;
 	});
-	//
-	Rotate();
-	//
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	inputFloat3[0] = worldTransform_.translation_.x;
