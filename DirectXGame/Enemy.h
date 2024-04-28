@@ -25,6 +25,10 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
+	//自作メンバ関数
+	void ApproachUpdate();
+	void LeaveUpdate();
+
 
 private:
 	// ワールド変換データ
@@ -35,7 +39,7 @@ private:
 	uint32_t textureHandle_ = 0;
 	//フェーズ
 	Phase phase_ = Phase::Approach;
-	//関数
-	void ApproachUpdate(const Vector3& move);
-	void LeaveUpdate(const Vector3& move);
+	//メンバ関数ポインタのテーブル
+	static void (Enemy::*spFuncTable[])();
+	
 };
