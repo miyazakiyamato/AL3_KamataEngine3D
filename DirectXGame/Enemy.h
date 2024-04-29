@@ -1,11 +1,8 @@
 #pragma once
 #include "Model.h"
 #include "WorldTransform.h"
+#include "BaseEnemyState.h"
 
-enum class Phase {
-	Approach, // 接近する
-	Leave,    // 離脱する
-};
 
 class Enemy {
 public:
@@ -25,10 +22,8 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
-	//自作メンバ関数
-	void ApproachUpdate();
-	void LeaveUpdate();
 
+	void ChangeState(std::unique_ptr<BaseEnemyState> state);
 
 private:
 	// ワールド変換データ
@@ -37,9 +32,10 @@ private:
 	Model* model_ = nullptr;
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
-	//フェーズ
-	Phase phase_ = Phase::Approach;
-	//メンバ関数ポインタのテーブル
-	static void (Enemy::*spFuncTable[])();
-	
+	//
+	std::unique_ptr<BaseEnemyState> state_;
+
+public:
+	Vector3 GetWorldTransformTranslation() const{ return worldTransform_.translation_; }
+	void SetWorldTransformTranslation(const Vector3& translation);
 };

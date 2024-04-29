@@ -3,6 +3,7 @@
 #include "MyMtMatrix.h"
 #include "MyMtVector3.h"
 #include "TextureManager.h"
+#include "EnemyStateApproach.h"
 
 void Enemy::Initialize(Model* model, const Vector3& position) {
 	assert(model);
@@ -11,33 +12,18 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	//
+	ChangeState(std::make_unique<EnemyStateApproach>(this));
 }
 
 void Enemy::Update() {
 	// キャラ移動
-	(this->*spFuncTable[static_cast<size_t>(phase_)])();
+	state_->Update();
 
 	worldTransform_.UpdateMatrix();
 }
 
 void Enemy::Draw(ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, textureHandle_); }
 
-void Enemy::ApproachUpdate() {
-	const float kCharacterSpeed = 0.2f;
-	Vector3 move = {0.0f, 0.0f, -kCharacterSpeed};
-	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move);
-	//
-	if (worldTransform_.translation_.z < 0.0f) {
-		phase_ = Phase::Leave;
-	}
-}
+void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) { state_ = std::move(state); }
 
-void Enemy::LeaveUpdate() {
-	const float kCharacterSpeed = 0.2f;
-	Vector3 move = {-kCharacterSpeed, kCharacterSpeed, 0.0f};
-	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move); }
-
-void (Enemy::*Enemy::spFuncTable[])() = {
-    &Enemy::ApproachUpdate,
-    &Enemy::LeaveUpdate,
-};
+void Enemy::SetWorldTransformTranslation(const Vector3& translation) { worldTransform_.translation_ = translation; }
