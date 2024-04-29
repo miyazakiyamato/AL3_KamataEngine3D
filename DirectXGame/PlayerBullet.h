@@ -2,9 +2,6 @@
 #include "Model.h"
 #include "WorldTransform.h"
 
-// 寿命
-static const int32_t kLifeTime = 60 * 5;
-
 class PlayerBullet {
 public:
 	/// <summary>
@@ -23,9 +20,12 @@ public:
 	void Draw(ViewProjection& viewProjection);
 
 private:
-	Vector3 velocity_;
+	// 寿命
+	static const int32_t kLifeTime = 60 * 5;
+
+	Vector3 velocity_{};
 	// ワールド変換データ
-	WorldTransform worldTransform_;
+	WorldTransform worldTransform_{};
 	// モデル
 	Model* model_ = nullptr;
 	// テクスチャハンドル
