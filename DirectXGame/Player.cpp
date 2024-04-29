@@ -39,16 +39,7 @@ void Player::Update() {
 	Rotate();
 
 	Attack();
-	for (PlayerBullet* bullet : bullets_) {
-		bullet->Update();	
-	}
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->isDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	inputFloat3[0] = worldTransform_.translation_.x;
@@ -91,6 +82,16 @@ void Player::Attack() {
 		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
 		bullets_.push_back(newBullet);
 	}
+	for (PlayerBullet* bullet : bullets_) {
+		bullet->Update();
+	}
+	bullets_.remove_if([](PlayerBullet* bullet) {
+		if (bullet->isDead()) {
+			delete bullet;
+			return true;
+		}
+		return false;
+	});
 }
 
 void Player::Rotate() { 
