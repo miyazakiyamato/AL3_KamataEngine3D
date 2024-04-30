@@ -4,6 +4,7 @@
 #include "BaseEnemyState.h"
 #include "EnemyBullet.h"
 #include "list"
+#include "TimedCall.h"
 
 class Enemy {
 public:
@@ -29,7 +30,8 @@ public:
 	static const int kFireInterval = 60;
 	//
 	void Fire();
-	void FireInitialize();
+	void FireTimed();
+	void FireCancel();
 
 private:
 	// ワールド変換データ
@@ -42,14 +44,12 @@ private:
 	std::unique_ptr<BaseEnemyState> state_;
 	//リスト
 	std::list<EnemyBullet*> bullets_;
-	//発射タイマー
-	int32_t fireTimer_ = 0;
+	//時限発射のリスト
+	std::list<TimedCall*> timedCalls_;
 	//関数
 	void Attack();
 
 public:
 	Vector3 GetWorldTransformTranslation() const{ return worldTransform_.translation_; }
 	void SetWorldTransformTranslation(const Vector3& translation);
-	int32_t GetFireTimer() { return fireTimer_; }
-	void SetFireTimer(const int32_t& fireTimer);
 };

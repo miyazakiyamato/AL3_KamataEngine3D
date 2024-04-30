@@ -9,6 +9,9 @@ Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
 		delete bullet;
 	}
+	for (TimedCall* timedCalls : timedCalls_) {
+		delete timedCalls;
+	}
 }
 
 void Enemy::Initialize(Model* model, const Vector3& position) {
@@ -19,8 +22,6 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	worldTransform_.translation_ = position;
 	//
 	ChangeState(std::make_unique<EnemyStateApproach>(this));
-	//
-	FireInitialize();
 }
 
 void Enemy::Update() {
@@ -28,6 +29,17 @@ void Enemy::Update() {
 	state_->Update();
 	//
 	Attack();
+	//
+	timedCalls_.remove_if([](TimedCall* timedCalls) {
+		if (timedCalls->IsFinished()) {
+			delete timedCalls;
+			return true;
+		}
+		return false;
+	});
+	for (TimedCall* timedCalls : timedCalls_) {
+		timedCalls->Update();
+	}
 	//
 	worldTransform_.UpdateMatrix();
 }
@@ -41,12 +53,22 @@ void Enemy::Draw(ViewProjection& viewProjection) {
 
 void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) { state_ = std::move(state); }
 
-void Enemy::FireInitialize() { fireTimer_ = kFireInterval; }
+void Enemy::FireTimed() {
+	Fire();
+	//
+	timedCalls_.push_back(new TimedCall(std::bind_front(&Enemy::FireTimed, this), kFireInterval));
+}
+
+void Enemy::FireCancel() {
+	timedCalls_.remove_if([](TimedCall* timedCalls) {
+		delete timedCalls;
+		return true;
+	});
+}
 
 void Enemy::Fire() {
 	const float kBulletSpeed = 1.0f;
 	Vector3 velocity(0, 0, -kBulletSpeed);
-
 	velocity = MyMtMatrix::TransformNormal(velocity, worldTransform_.matWorld_);
 
 	EnemyBullet* newBullet = new EnemyBullet();
@@ -68,5 +90,3 @@ void Enemy::Attack() {
 }
 
 void Enemy::SetWorldTransformTranslation(const Vector3& translation) { worldTransform_.translation_ = translation; }
-
-void Enemy::SetFireTimer(const int32_t& fireTimer) { fireTimer_ = fireTimer; }
