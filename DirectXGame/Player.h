@@ -27,7 +27,7 @@ public:
 
 private:
 	//ワールド変換データ
-	WorldTransform worldTransform_;
+	WorldTransform worldTransform_{};
 	//モデル
 	Model* model_ = nullptr;
 	//テクスチャハンドル
@@ -42,4 +42,7 @@ private:
 	void Attack();
 	void Rotate();
 	
+public:
+	Vector3 GetWorldPosition();
+
 };

@@ -6,7 +6,7 @@ EnemyStateApproach::EnemyStateApproach(Enemy* enemy)
 	: BaseEnemyState("State Approach",enemy) { enemy_->FireTimed(); }
 
 void EnemyStateApproach::Update() {
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.1f;
 	Vector3 move = {0.0f, 0.0f, -kCharacterSpeed};
 	enemy_->SetWorldTransformTranslation(MyMtVector3::Add(enemy_->GetWorldTransformTranslation(), move));
 	//

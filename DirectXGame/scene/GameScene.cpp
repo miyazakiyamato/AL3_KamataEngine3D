@@ -36,6 +36,7 @@ void GameScene::Initialize() {
 	player_->Initialize(model_, textureHandle_);
 
 	enemy_ = new Enemy();
+	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_, {30,2.0f,40.0f});
 }
 

@@ -4,6 +4,7 @@
 #include "MyMtVector3.h"
 #include "TextureManager.h"
 #include "EnemyStateApproach.h"
+#include "Player.h"
 
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
@@ -67,9 +68,12 @@ void Enemy::FireCancel() {
 }
 
 void Enemy::Fire() {
+	assert(player_);
+	//
 	const float kBulletSpeed = 1.0f;
-	Vector3 velocity(0, 0, -kBulletSpeed);
-	velocity = MyMtMatrix::TransformNormal(velocity, worldTransform_.matWorld_);
+
+	Vector3 velocity{MyMtVector3::Subtract(player_->GetWorldPosition(), GetWorldPosition())};
+	velocity = MyMtVector3::Multiply(kBulletSpeed,MyMtVector3::Normalize(velocity));
 
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
@@ -90,3 +94,11 @@ void Enemy::Attack() {
 }
 
 void Enemy::SetWorldTransformTranslation(const Vector3& translation) { worldTransform_.translation_ = translation; }
+
+Vector3 Enemy::GetWorldPosition() {
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+}

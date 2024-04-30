@@ -6,6 +6,8 @@
 #include "list"
 #include "TimedCall.h"
 
+class Player;
+
 class Enemy {
 public:
 	Enemy(){};
@@ -34,8 +36,9 @@ public:
 	void FireCancel();
 
 private:
+	Player* player_ = nullptr;
 	// ワールド変換データ
-	WorldTransform worldTransform_;
+	WorldTransform worldTransform_{};
 	// モデル
 	Model* model_ = nullptr;
 	// テクスチャハンドル
@@ -52,4 +55,6 @@ private:
 public:
 	Vector3 GetWorldTransformTranslation() const{ return worldTransform_.translation_; }
 	void SetWorldTransformTranslation(const Vector3& translation);
+	void SetPlayer(Player* player) { player_ = player; }
+	Vector3 GetWorldPosition();
 };

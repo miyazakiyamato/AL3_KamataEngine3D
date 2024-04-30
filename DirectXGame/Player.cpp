@@ -60,7 +60,9 @@ void Player::Update() {
 	//
 	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, move);
 	//
-	worldTransform_.matWorld_ = MyMtMatrix::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	//worldTransform_.matWorld_ = MyMtMatrix::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	//
+	worldTransform_.UpdateMatrix();
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
@@ -102,5 +104,13 @@ void Player::Rotate() {
 	} else if (input_->PushKey(DIK_D)) {
 		worldTransform_.rotation_.y += kRotSpeed;
 	}
+}
+
+Vector3 Player::GetWorldPosition() {
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
 }
 
