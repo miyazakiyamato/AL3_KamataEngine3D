@@ -8,9 +8,9 @@ public:
 	~EnemyBullet() {}
 	
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
-	void Update();
+	void Update(const Vector3& velocity);
 	void Draw(const ViewProjection& viewProjection);
-	
+
 private:
 	// 寿命
 	static const int32_t kLifeTime = 60 * 5;
@@ -26,7 +26,10 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	// デスフラグ
 	bool isDead_ = false;
+	//関数
+	void Rotate(const Vector3& velocity);
 
 public:
 	bool isDead() const { return isDead_; }
+	Vector3 GetWorldPosition();
 };

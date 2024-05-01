@@ -82,7 +82,12 @@ void Enemy::Fire() {
 
 void Enemy::Attack() {
 	for (EnemyBullet* bullet : bullets_) {
-		bullet->Update();
+		const float kBulletSpeed = 1.0f;
+
+		Vector3 velocity{MyMtVector3::Subtract(player_->GetWorldPosition(), bullet->GetWorldPosition())};
+		velocity = MyMtVector3::Multiply(kBulletSpeed, MyMtVector3::Normalize(velocity));
+
+		bullet->Update(velocity);
 	}
 	bullets_.remove_if([](EnemyBullet* bullet) {
 		if (bullet->isDead()) {

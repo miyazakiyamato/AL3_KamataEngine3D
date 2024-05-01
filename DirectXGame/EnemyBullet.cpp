@@ -10,15 +10,21 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	worldTransform_.scale_ = {0.5f, 0.5f, 3.0f};
-	worldTransform_.rotation_.y = std::atan2f(velocity.x,velocity.z);
-	Vector3 velocityZ = MyMtMatrix::Transform(velocity, MyMtMatrix::MakeRotateYMatrix(-worldTransform_.rotation_.y));
-	worldTransform_.rotation_.x = std::atan2f(-velocityZ.y, velocityZ.z);
+	Rotate(velocity);
 	worldTransform_.UpdateMatrix();
 	velocity_ = velocity;
 	textureHandle_ = TextureManager::Load("./Resources/red.png");
 }
 
-void EnemyBullet::Update() {
+void EnemyBullet::Update(const Vector3& velocity) {
+	Vector3 toPlayer = velocity;
+
+
+
+	velocity_ = MyMtVector3::Multiply(MyMtVector3::Length(velocity), MyMtVector3::Slerp(MyMtVector3::Normalize( velocity_),MyMtVector3::Normalize( toPlayer), 0.1f));
+
+	Rotate(velocity_);
+
 	worldTransform_.translation_ = MyMtVector3::Add(worldTransform_.translation_, velocity_);
 	worldTransform_.UpdateMatrix();
 	if (--deathTimer_ <= 0) {
@@ -27,4 +33,18 @@ void EnemyBullet::Update() {
 }
 
 void EnemyBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, textureHandle_); }
+
+void EnemyBullet::Rotate(const Vector3& velocity) {
+	worldTransform_.rotation_.y = std::atan2f(velocity.x, velocity.z);
+	Vector3 velocityZ = MyMtMatrix::Transform(velocity, MyMtMatrix::MakeRotateYMatrix(-worldTransform_.rotation_.y));
+	worldTransform_.rotation_.x = std::atan2f(-velocityZ.y, velocityZ.z);
+}
+
+Vector3 EnemyBullet::GetWorldPosition() {
+	Vector3 worldPos;
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+}
 
