@@ -3,6 +3,7 @@
 #include <cassert>
 #include "MyMtVector3.h"
 #include "MyMtMatrix.h"
+#include "CollisionConfig.h"
 
 void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector3& velocity) {
 	assert(model);
@@ -14,6 +15,9 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	worldTransform_.UpdateMatrix();
 	velocity_ = velocity;
 	textureHandle_ = TextureManager::Load("./Resources/red.png");
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	//
+	SetCollisionMask(GetCollisionMask() - kCollisionAttributeEnemy);
 }
 
 void EnemyBullet::Update(const Vector3& velocity) {
