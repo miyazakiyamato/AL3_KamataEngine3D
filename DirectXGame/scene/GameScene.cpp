@@ -3,6 +3,7 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "MyMtMatrix.h"
+#include "MyMtVector3.h"
 
 GameScene::GameScene() {}
 
@@ -37,7 +38,7 @@ void GameScene::Initialize() {
 
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
-	enemy_->Initialize(model_, {0,2.0f,40.0f});
+	enemy_->Initialize(model_, {30,2.0f,40.0f});
 }
 
 void GameScene::Update() { 
@@ -45,6 +46,8 @@ void GameScene::Update() {
 	//
 	player_->Update();
 	enemy_->Update();
+	//
+	CheckAllCollisions();
 	// デバッグ表示
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_P)) {
@@ -112,5 +115,39 @@ void GameScene::Draw() {
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
+#pragma endregion
+}
+
+void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
+	Vector3 posA = colliderA->GetWorldPosition();
+	Vector3 posB = colliderB->GetWorldPosition();
+
+	float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
+
+	if (length <= powf(colliderA->GetRadius() + colliderB->GetRadius(), 2)) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
+}
+
+void GameScene::CheckAllCollisions() {
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+#pragma region 自機と敵弾の当たり判定
+	for (EnemyBullet* bullet : enemyBullets) {
+		CheckCollisionPair(player_, bullet);
+	}
+#pragma endregion
+#pragma region 自弾と敵機の当たり判定
+	for (PlayerBullet* bullet : playerBullets) {
+		CheckCollisionPair(bullet,enemy_);
+	}
+#pragma endregion
+#pragma region 自弾と敵弾の当たり判定
+	for (PlayerBullet* bullet1 : playerBullets) {
+		for (EnemyBullet* bullet2 : enemyBullets) {
+			CheckCollisionPair(bullet1, bullet2);
+		}
+	}
 #pragma endregion
 }

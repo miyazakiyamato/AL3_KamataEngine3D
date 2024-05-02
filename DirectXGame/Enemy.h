@@ -1,14 +1,14 @@
 #pragma once
 #include "Model.h"
-#include "WorldTransform.h"
 #include "BaseEnemyState.h"
 #include "EnemyBullet.h"
 #include "list"
 #include "TimedCall.h"
+#include "Collider.h"
 
 class Player;
 
-class Enemy {
+class Enemy:public Collider {
 public:
 	Enemy(){};
 	~Enemy();
@@ -34,6 +34,8 @@ public:
 	void Fire();
 	void FireTimed();
 	void FireCancel();
+	//
+	void OnCollision() override;
 
 private:
 	Player* player_ = nullptr;
@@ -56,5 +58,6 @@ public:
 	Vector3 GetWorldTransformTranslation() const{ return worldTransform_.translation_; }
 	void SetWorldTransformTranslation(const Vector3& translation);
 	void SetPlayer(Player* player) { player_ = player; }
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
+	const std::list<EnemyBullet*>& GetBullets() { return bullets_; }
 };

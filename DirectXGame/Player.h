@@ -1,11 +1,11 @@
 #pragma once
 #include "Model.h"
-#include "WorldTransform.h"
 #include "Input.h"
 #include "PlayerBullet.h"
 #include <list>
+#include "Collider.h"
 
-class Player {
+class Player:public Collider {
 public:
 	Player(){};
 
@@ -25,6 +25,8 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	void OnCollision() override;
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_{};
@@ -43,6 +45,6 @@ private:
 	void Rotate();
 	
 public:
-	Vector3 GetWorldPosition();
-
+	Vector3 GetWorldPosition() override;
+	const std::list<PlayerBullet*> GetBullets() { return bullets_; }
 };

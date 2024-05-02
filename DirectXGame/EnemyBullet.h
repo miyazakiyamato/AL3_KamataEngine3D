@@ -1,8 +1,8 @@
 #pragma once
 #include "Model.h"
-#include "WorldTransform.h"
+#include "Collider.h"
 
-class EnemyBullet {
+class EnemyBullet : public Collider {
 public:
 	EnemyBullet() {}
 	~EnemyBullet() {}
@@ -10,6 +10,8 @@ public:
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
 	void Update(const Vector3& velocity);
 	void Draw(const ViewProjection& viewProjection);
+	//
+	void OnCollision() override;
 
 private:
 	// 寿命
@@ -31,5 +33,5 @@ private:
 
 public:
 	bool isDead() const { return isDead_; }
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 };
