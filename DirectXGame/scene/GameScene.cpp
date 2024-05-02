@@ -3,6 +3,7 @@
 #include <cassert>
 #include "AxisIndicator.h"
 #include "MyMtMatrix.h"
+#include "MyMtVector3.h"
 
 GameScene::GameScene() {}
 
@@ -37,7 +38,7 @@ void GameScene::Initialize() {
 
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
-	enemy_->Initialize(model_, {0,2.0f,40.0f});
+	enemy_->Initialize(model_, {30,2.0f,40.0f});
 }
 
 void GameScene::Update() { 
@@ -45,6 +46,8 @@ void GameScene::Update() {
 	//
 	player_->Update();
 	enemy_->Update();
+	//
+	CheckAllCollisions();
 	// デバッグ表示
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_P)) {
@@ -113,4 +116,49 @@ void GameScene::Draw() {
 	Sprite::PostDraw();
 
 #pragma endregion
+}
+
+void GameScene::CheckAllCollisions() {
+	Vector3 posA, posB;
+
+	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
+	//
+	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
+	//
+	posA = player_->GetWorldPosition();
+
+	for (EnemyBullet* bullet : enemyBullets) {
+		posB = bullet->GetWorldPosition();
+
+		float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
+		if (length <= powf(1.0f + 1.0f, 2)) {
+			player_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+	//
+	posA = enemy_->GetWorldPosition();
+
+	for (PlayerBullet* bullet : playerBullets) {
+		posB = bullet->GetWorldPosition();
+
+		float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
+		if (length <= powf(1.0f + 1.0f, 2)) {
+			enemy_->OnCollision();
+			bullet->OnCollision();
+		}
+	}
+	//
+	for (PlayerBullet* bullet1 : playerBullets) {
+		posA = bullet1->GetWorldPosition();
+		for (EnemyBullet* bullet2 : enemyBullets) {
+			posB = bullet2->GetWorldPosition();
+
+			float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
+			if (length <= powf(1.0f + 1.0f, 2)) {
+				bullet1->OnCollision();
+				bullet2->OnCollision();
+			}
+		}
+	}
 }

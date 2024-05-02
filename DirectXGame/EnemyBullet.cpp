@@ -9,7 +9,7 @@ void EnemyBullet::Initialize(Model* model, const Vector3& position, const Vector
 	model_ = model;
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
-	worldTransform_.scale_ = {0.5f, 0.5f, 3.0f};
+	worldTransform_.scale_ = {1.0f, 1.0f, 1.0f};
 	Rotate(velocity);
 	worldTransform_.UpdateMatrix();
 	velocity_ = velocity;
@@ -33,6 +33,8 @@ void EnemyBullet::Update(const Vector3& velocity) {
 }
 
 void EnemyBullet::Draw(const ViewProjection& viewProjection) { model_->Draw(worldTransform_, viewProjection, textureHandle_); }
+
+void EnemyBullet::OnCollision() { isDead_ = true; }
 
 void EnemyBullet::Rotate(const Vector3& velocity) {
 	worldTransform_.rotation_.y = std::atan2f(velocity.x, velocity.z);

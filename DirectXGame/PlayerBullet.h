@@ -18,6 +18,8 @@ public:
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
+	//
+	void OnCollision();
 
 private:
 	// 寿命
@@ -37,4 +39,5 @@ private:
 
 public:
 	bool isDead() const { return isDead_; }
+	Vector3 GetWorldPosition();
 };

@@ -10,6 +10,8 @@ public:
 	void Initialize(Model* model, const Vector3& position, const Vector3& velocity);
 	void Update(const Vector3& velocity);
 	void Draw(const ViewProjection& viewProjection);
+	//
+	void OnCollision();
 
 private:
 	// 寿命

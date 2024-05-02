@@ -25,6 +25,8 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 
+	void OnCollision();
+
 private:
 	//ワールド変換データ
 	WorldTransform worldTransform_{};
@@ -44,5 +46,5 @@ private:
 	
 public:
 	Vector3 GetWorldPosition();
-
+	const std::list<PlayerBullet*> GetBullets() { return bullets_; }
 };

@@ -72,6 +72,8 @@ void Player::Draw(ViewProjection& viewProjection) {
 	}
 }
 
+void Player::OnCollision() {}
+
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_SPACE)) {
 		// DirectX::XMFLOAT3 position = worldTransform_.translation_;

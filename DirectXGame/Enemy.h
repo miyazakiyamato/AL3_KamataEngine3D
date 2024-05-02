@@ -34,6 +34,8 @@ public:
 	void Fire();
 	void FireTimed();
 	void FireCancel();
+	//
+	void OnCollision();
 
 private:
 	Player* player_ = nullptr;
@@ -57,4 +59,5 @@ public:
 	void SetWorldTransformTranslation(const Vector3& translation);
 	void SetPlayer(Player* player) { player_ = player; }
 	Vector3 GetWorldPosition();
+	const std::list<EnemyBullet*>& GetBullets() { return bullets_; }
 };
