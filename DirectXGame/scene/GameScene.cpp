@@ -118,47 +118,36 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
+void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
+	Vector3 posA = colliderA->GetWorldPosition();
+	Vector3 posB = colliderB->GetWorldPosition();
+
+	float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
+
+	if (length <= powf(colliderA->GetRadius() + colliderB->GetRadius(), 2)) {
+		colliderA->OnCollision();
+		colliderB->OnCollision();
+	}
+}
+
 void GameScene::CheckAllCollisions() {
-	Vector3 posA, posB;
-
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
-	//
 	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
-	//
-	posA = player_->GetWorldPosition();
-
+#pragma region 自機と敵弾の当たり判定
 	for (EnemyBullet* bullet : enemyBullets) {
-		posB = bullet->GetWorldPosition();
-
-		float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
-		if (length <= powf(1.0f + 1.0f, 2)) {
-			player_->OnCollision();
-			bullet->OnCollision();
-		}
+		CheckCollisionPair(player_, bullet);
 	}
-	//
-	posA = enemy_->GetWorldPosition();
-
+#pragma endregion
+#pragma region 自弾と敵機の当たり判定
 	for (PlayerBullet* bullet : playerBullets) {
-		posB = bullet->GetWorldPosition();
-
-		float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
-		if (length <= powf(1.0f + 1.0f, 2)) {
-			enemy_->OnCollision();
-			bullet->OnCollision();
-		}
+		CheckCollisionPair(bullet,enemy_);
 	}
-	//
+#pragma endregion
+#pragma region 自弾と敵弾の当たり判定
 	for (PlayerBullet* bullet1 : playerBullets) {
-		posA = bullet1->GetWorldPosition();
 		for (EnemyBullet* bullet2 : enemyBullets) {
-			posB = bullet2->GetWorldPosition();
-
-			float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
-			if (length <= powf(1.0f + 1.0f, 2)) {
-				bullet1->OnCollision();
-				bullet2->OnCollision();
-			}
+			CheckCollisionPair(bullet1, bullet2);
 		}
 	}
+#pragma endregion
 }

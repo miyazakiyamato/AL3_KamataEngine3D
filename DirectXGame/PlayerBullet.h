@@ -1,8 +1,8 @@
 #pragma once
 #include "Model.h"
-#include "WorldTransform.h"
+#include "Collider.h"
 
-class PlayerBullet {
+class PlayerBullet : public Collider{
 public:
 	/// <summary>
 	/// 初期化
@@ -19,7 +19,7 @@ public:
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
 	//
-	void OnCollision();
+	void OnCollision() override;
 
 private:
 	// 寿命
@@ -39,5 +39,5 @@ private:
 
 public:
 	bool isDead() const { return isDead_; }
-	Vector3 GetWorldPosition();
+	Vector3 GetWorldPosition() override;
 };

@@ -61,6 +61,7 @@ private: // メンバ変数
 	//
 	bool isDebugCameraActive_ = false;
 	//
+	void CheckCollisionPair(Collider* colliderA, Collider* colliderB);
 	void CheckAllCollisions();
 	/// <summary>
 	/// ゲームシーン用
