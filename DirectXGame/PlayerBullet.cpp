@@ -2,6 +2,7 @@
 #include "TextureManager.h"
 #include <cassert>
 #include "MyMtVector3.h"
+#include "CollisionConfig.h"
 
 void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector3 velocity) {
 	assert(model);
@@ -10,6 +11,9 @@ void PlayerBullet::Initialize(Model* model, const Vector3& position,const Vector
 	worldTransform_.Initialize();
 	worldTransform_.translation_ = position;
 	velocity_ = velocity;
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	//
+	SetCollisionMask(GetCollisionMask() - kCollisionAttributePlayer);
 }
 
 void PlayerBullet::Update() {

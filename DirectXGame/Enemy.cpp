@@ -5,6 +5,7 @@
 #include "TextureManager.h"
 #include "EnemyStateApproach.h"
 #include "Player.h"
+#include "CollisionConfig.h"
 
 Enemy::~Enemy() {
 	for (EnemyBullet* bullet : bullets_) {
@@ -23,6 +24,9 @@ void Enemy::Initialize(Model* model, const Vector3& position) {
 	worldTransform_.translation_ = position;
 	//
 	ChangeState(std::make_unique<EnemyStateApproach>(this));
+	SetCollisionAttribute(kCollisionAttributeEnemy);
+	//
+	SetCollisionMask(GetCollisionMask() - kCollisionAttributeEnemy);
 }
 
 void Enemy::Update() {

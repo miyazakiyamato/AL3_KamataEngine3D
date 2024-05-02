@@ -3,6 +3,7 @@
 #include "MyMtMatrix.h"
 #include "MyMtVector3.h"
 #include "ImGuiManager.h"
+#include "CollisionConfig.h"
 
 Player::~Player() {
 	for (PlayerBullet* bullet : bullets_) {
@@ -17,6 +18,10 @@ void Player::Initialize(Model* model, uint32_t textureHandle) {
 	worldTransform_.Initialize();
 	//シングルトン
 	input_ = Input::GetInstance();
+	//
+	SetCollisionAttribute(kCollisionAttributePlayer);
+	//
+	SetCollisionMask(GetCollisionMask() - kCollisionAttributePlayer);
 }
 
 void Player::Update() { 
