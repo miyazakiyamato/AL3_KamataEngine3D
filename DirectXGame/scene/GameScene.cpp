@@ -15,6 +15,8 @@ GameScene::~GameScene() {
 	//
 	delete player_;
 	delete enemy_;
+
+	delete collisionManager_;
 }
 
 void GameScene::Initialize() {
@@ -39,6 +41,8 @@ void GameScene::Initialize() {
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_, {30,2.0f,40.0f});
+
+	collisionManager_ = new CollisionManager();
 }
 
 void GameScene::Update() { 
@@ -47,7 +51,9 @@ void GameScene::Update() {
 	player_->Update();
 	enemy_->Update();
 	//
-	CheckAllCollisions();
+	collisionManager_->ColliderClear();
+	SetAllCollisions();
+	collisionManager_->CheckAllCollisions();
 	// デバッグ表示
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_P)) {
@@ -118,44 +124,17 @@ void GameScene::Draw() {
 #pragma endregion
 }
 
-void GameScene::CheckCollisionPair(Collider* colliderA, Collider* colliderB) {
-	if ((colliderA->GetCollisionAttribute() & colliderB->GetCollisionMask()) == 0 || (colliderB->GetCollisionAttribute() & colliderA->GetCollisionMask()) == 0) {
-		return;
-	}
-	Vector3 posA = colliderA->GetWorldPosition();
-	Vector3 posB = colliderB->GetWorldPosition();
-
-	float length = powf(posB.x - posA.x, 2) + powf(posB.y - posA.y, 2) + powf(posB.z - posA.z, 2);
-
-	if (length <= powf(colliderA->GetRadius() + colliderB->GetRadius(), 2)) {
-		colliderA->OnCollision();
-		colliderB->OnCollision();
-	}
-}
-
-void GameScene::CheckAllCollisions() {
+void GameScene::SetAllCollisions() {
 	const std::list<PlayerBullet*>& playerBullets = player_->GetBullets();
 	const std::list<EnemyBullet*>& enemyBullets = enemy_->GetBullets();
 	//
-	std::list<Collider*> colliders_;
-	//
-	colliders_.push_back(player_);
-	colliders_.push_back(enemy_);
+	collisionManager_->SetColliders(player_);
+	collisionManager_->SetColliders(enemy_);
 	//
 	for (PlayerBullet* bullet : playerBullets) {
-		colliders_.push_back(bullet);
+		collisionManager_->SetColliders(bullet);
 	}
 	for (EnemyBullet* bullet : enemyBullets) {
-		colliders_.push_back(bullet);
+		collisionManager_->SetColliders(bullet);
 	}
-#pragma region 当たり判定
-	std::list<Collider*>::iterator itrA = colliders_.begin();
-	for (; itrA != colliders_.end(); ++itrA) {
-		std::list<Collider*>::iterator itrB = itrA;
-		itrB++;
-		for (; itrB != colliders_.end(); ++itrB) {
-			CheckCollisionPair(*itrA, *itrB);
-		}
-	}
-#pragma endregion
 }
