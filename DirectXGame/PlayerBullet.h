@@ -4,6 +4,7 @@
 
 class PlayerBullet : public Collider{
 public:
+	~PlayerBullet() {}
 	/// <summary>
 	/// 初期化
 	/// </summary>
