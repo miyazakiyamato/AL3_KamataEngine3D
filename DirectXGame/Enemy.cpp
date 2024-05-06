@@ -6,11 +6,9 @@
 #include "EnemyStateApproach.h"
 #include "Player.h"
 #include "CollisionConfig.h"
+#include "GameScene.h"
 
 Enemy::~Enemy() {
-	for (EnemyBullet* bullet : bullets_) {
-		delete bullet;
-	}
 	for (TimedCall* timedCalls : timedCalls_) {
 		delete timedCalls;
 	}
@@ -33,8 +31,6 @@ void Enemy::Update() {
 	// キャラ移動
 	state_->Update();
 	//
-	Attack();
-	//
 	timedCalls_.remove_if([](TimedCall* timedCalls) {
 		if (timedCalls->IsFinished()) {
 			delete timedCalls;
@@ -51,9 +47,6 @@ void Enemy::Update() {
 
 void Enemy::Draw(ViewProjection& viewProjection) { 
 	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-	for (EnemyBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
 }
 
 void Enemy::ChangeState(std::unique_ptr<BaseEnemyState> state) { state_ = std::move(state); }
@@ -71,7 +64,7 @@ void Enemy::FireCancel() {
 	});
 }
 
-void Enemy::OnCollision() {}
+void Enemy::OnCollision() { isDead_ = true; }
 
 void Enemy::Fire() {
 	assert(player_);
@@ -83,25 +76,7 @@ void Enemy::Fire() {
 
 	EnemyBullet* newBullet = new EnemyBullet();
 	newBullet->Initialize(model_, worldTransform_.translation_, velocity);
-	bullets_.push_back(newBullet);
-}
-
-void Enemy::Attack() {
-	for (EnemyBullet* bullet : bullets_) {
-		const float kBulletSpeed = 1.0f;
-
-		Vector3 velocity{MyMtVector3::Subtract(player_->GetWorldPosition(), bullet->GetWorldPosition())};
-		velocity = MyMtVector3::Multiply(kBulletSpeed, MyMtVector3::Normalize(velocity));
-
-		bullet->Update(velocity);
-	}
-	bullets_.remove_if([](EnemyBullet* bullet) {
-		if (bullet->isDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	gameScene_->AddEnemyBullet(newBullet);
 }
 
 void Enemy::SetWorldTransformTranslation(const Vector3& translation) { worldTransform_.translation_ = translation; }

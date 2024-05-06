@@ -6,6 +6,7 @@
 #include "TimedCall.h"
 #include "Collider.h"
 
+class GameScene;
 class Player;
 
 class Enemy:public Collider {
@@ -38,6 +39,8 @@ public:
 	void OnCollision() override;
 
 private:
+	GameScene* gameScene_ = nullptr;
+	//
 	Player* player_ = nullptr;
 	// ワールド変換データ
 	WorldTransform worldTransform_{};
@@ -47,17 +50,16 @@ private:
 	uint32_t textureHandle_ = 0;
 	//ステート
 	std::unique_ptr<BaseEnemyState> state_;
-	//リスト
-	std::list<EnemyBullet*> bullets_;
 	//時限発射のリスト
 	std::list<TimedCall*> timedCalls_;
-	//関数
-	void Attack();
+	//
+	bool isDead_ = false;
 
 public:
+	bool isDead() const { return isDead_; }
 	Vector3 GetWorldTransformTranslation() const{ return worldTransform_.translation_; }
 	void SetWorldTransformTranslation(const Vector3& translation);
 	void SetPlayer(Player* player) { player_ = player; }
 	Vector3 GetWorldPosition() override;
-	const std::list<EnemyBullet*>& GetBullets() { return bullets_; }
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 };

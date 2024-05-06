@@ -5,6 +5,8 @@
 #include <list>
 #include "Collider.h"
 
+class GameScene;
+
 class Player:public Collider {
 public:
 	Player(){};
@@ -13,7 +15,7 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model, uint32_t textureHandle);
+	void Initialize(Model* model,const Vector3& position);
 
 	/// <summary>
 	/// 毎フレーム処理
@@ -28,23 +30,21 @@ public:
 	void OnCollision() override;
 
 private:
+	GameScene* gameScene_ = nullptr;
 	//ワールド変換データ
 	WorldTransform worldTransform_{};
 	//モデル
 	Model* model_ = nullptr;
-	//テクスチャハンドル
-	uint32_t textureHandle_ = 0;
 	//キー入力
 	Input* input_ = nullptr;
 	//
 	float inputFloat3[3] = {0, 0, 0};
-	//
-	std::list<PlayerBullet*> bullets_;
 	//関数
 	void Attack();
 	void Rotate();
 	
 public:
 	Vector3 GetWorldPosition() override;
-	const std::list<PlayerBullet*> GetBullets() { return bullets_; }
+	void SetParent(const WorldTransform* parent);
+	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 };

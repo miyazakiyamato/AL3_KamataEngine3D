@@ -4,21 +4,19 @@
 #include "MyMtVector3.h"
 #include "ImGuiManager.h"
 #include "CollisionConfig.h"
+#include "GameScene.h"
 
 Player::~Player() {
-	for (PlayerBullet* bullet : bullets_) {
-		delete bullet;
-	}
+	
 }
 
-void Player::Initialize(Model* model, uint32_t textureHandle) {
+void Player::Initialize(Model* model, const Vector3& position) {
 	assert(model);
 	model_ = model;
-	textureHandle_ = textureHandle;
 	worldTransform_.Initialize();
-	//worldTransform_.scale_ = {2.0f, 2.0f, 2.0f};
-	//worldTransform_.UpdateMatrix();
-	//シングルトン
+	 worldTransform_.translation_ = position;
+	 worldTransform_.UpdateMatrix();
+	// シングルトン
 	input_ = Input::GetInstance();
 	//
 	SetCollisionAttribute(kCollisionAttributePlayer);
@@ -73,10 +71,7 @@ void Player::Update() {
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
-	model_->Draw(worldTransform_, viewProjection, textureHandle_);
-	for (PlayerBullet* bullet : bullets_) {
-		bullet->Draw(viewProjection);
-	}
+	model_->Draw(worldTransform_, viewProjection);
 }
 
 void Player::OnCollision() {}
@@ -84,25 +79,16 @@ void Player::OnCollision() {}
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_SPACE)) {
 		// DirectX::XMFLOAT3 position = worldTransform_.translation_;
-		const float kBulletSpeed = 1.0f;
+		const float kBulletSpeed = 3.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
 
 		velocity = MyMtMatrix::TransformNormal(velocity, worldTransform_.matWorld_);
 
 		PlayerBullet* newBullet = new PlayerBullet();
-		newBullet->Initialize(model_, worldTransform_.translation_,velocity);
-		bullets_.push_back(newBullet);
+		newBullet->Initialize(model_, GetWorldPosition(), velocity);
+		gameScene_->AddPlayerBullet(newBullet);
 	}
-	for (PlayerBullet* bullet : bullets_) {
-		bullet->Update();
-	}
-	bullets_.remove_if([](PlayerBullet* bullet) {
-		if (bullet->isDead()) {
-			delete bullet;
-			return true;
-		}
-		return false;
-	});
+	
 }
 
 void Player::Rotate() { 
@@ -122,4 +108,6 @@ Vector3 Player::GetWorldPosition() {
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
 	return worldPos;
 }
+
+void Player::SetParent(const WorldTransform* parent) { worldTransform_.parent_ = parent; }
 
