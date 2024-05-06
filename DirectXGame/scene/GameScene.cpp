@@ -17,6 +17,8 @@ GameScene::~GameScene() {
 	delete enemy_;
 
 	delete collisionManager_;
+	//
+	delete modelSkydome_;
 }
 
 void GameScene::Initialize() {
@@ -28,6 +30,7 @@ void GameScene::Initialize() {
 	textureHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
 	model_ = Model::Create();
 	worldTransform_.Initialize();
+	viewProjection_.farZ = 200.0f;
 	viewProjection_.Initialize();
 	//
 	debugCamera_ = new DebugCamera(1280, 720);
@@ -36,13 +39,16 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetTargetViewProjection(&debugCamera_->GetViewProjection());
 	//
 	player_ = new Player(); 
-	player_->Initialize(model_, textureHandle_);
+	player_->Initialize(Model::CreateFromOBJ("airship", true), textureHandle_);
 
 	enemy_ = new Enemy();
 	enemy_->SetPlayer(player_);
 	enemy_->Initialize(model_, {30,2.0f,40.0f});
 
 	collisionManager_ = new CollisionManager();
+
+	modelSkydome_ = new Skydome();
+	modelSkydome_->Initialize(Model::CreateFromOBJ("skydome", true));
 }
 
 void GameScene::Update() { 
@@ -50,6 +56,8 @@ void GameScene::Update() {
 	//
 	player_->Update();
 	enemy_->Update();
+	//
+	modelSkydome_->Update();
 	//
 	collisionManager_->ColliderClear();
 	SetAllCollisions();
@@ -100,7 +108,7 @@ void GameScene::Draw() {
 	player_->Draw(viewProjection_);
 	enemy_->Draw(viewProjection_);
 	//
-	
+	modelSkydome_->Draw(viewProjection_);
 	//デバッグ表示
 #ifdef _DEBUG
 	

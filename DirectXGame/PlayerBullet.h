@@ -37,6 +37,8 @@ private:
 	int32_t deathTimer_ = kLifeTime;
 	//デスフラグ
 	bool isDead_ = false;
+	//
+	void Rotate(const Vector3& velocity);
 
 public:
 	bool isDead() const { return isDead_; }
