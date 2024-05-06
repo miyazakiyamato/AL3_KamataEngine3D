@@ -5,17 +5,20 @@
 #include "ImGuiManager.h"
 #include "CollisionConfig.h"
 #include "GameScene.h"
+#include "TextureManager.h"
 
-Player::~Player() {
-	
-}
+Player::~Player() { delete sprite2DReticle_; }
 
-void Player::Initialize(Model* model, const Vector3& position) {
+void Player::Initialize(Model* model, uint32_t textureReticle, const Vector3& position) {
 	assert(model);
 	model_ = model;
 	worldTransform_.Initialize();
 	 worldTransform_.translation_ = position;
 	 worldTransform_.UpdateMatrix();
+	 //2Dスプライト
+	 sprite2DReticle_ = Sprite::Create(textureReticle, {}, {1, 1, 1, 1}, {0.5f, 0.5f});	 
+	 //3Dレティクル
+	 worldTransform3DReticle_.Initialize();
 	// シングルトン
 	input_ = Input::GetInstance();
 	//
@@ -24,12 +27,12 @@ void Player::Initialize(Model* model, const Vector3& position) {
 	SetCollisionMask(GetCollisionMask() - kCollisionAttributePlayer);
 }
 
-void Player::Update() { 
+void Player::Update(const ViewProjection& viewProjection) { 
 	worldTransform_.TransferMatrix();
 	//キャラ移動
 	Vector3 move = {0, 0, 0};
 	//
-	const float kCharacterSpeed = 0.2f;
+	const float kCharacterSpeed = 0.4f;
 	//
 	if (input_->PushKey(DIK_LEFT)) {
 		move.x -= kCharacterSpeed;	
@@ -44,7 +47,7 @@ void Player::Update() {
 	Rotate();
 
 	Attack();
-	
+
 #ifdef _DEBUG
 	ImGui::Begin("Player");
 	inputFloat3[0] = worldTransform_.translation_.x;
@@ -68,19 +71,28 @@ void Player::Update() {
 	//worldTransform_.matWorld_ = MyMtMatrix::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	//
 	worldTransform_.UpdateMatrix();
+
+	Reticle3DUpdate();
+	Reticle2DUpdate(viewProjection);
 }
 
 void Player::Draw(ViewProjection& viewProjection) {
 	model_->Draw(worldTransform_, viewProjection);
+	//model_->Draw(worldTransform3DReticle_, viewProjection);
 }
+
+void Player::DrawUI() { sprite2DReticle_->Draw(); }
 
 void Player::OnCollision() {}
 
 void Player::Attack() {
 	if (input_->TriggerKey(DIK_SPACE)) {
 		// DirectX::XMFLOAT3 position = worldTransform_.translation_;
-		const float kBulletSpeed = 3.0f;
+		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
+
+		velocity = MyMtVector3::Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
+		velocity = MyMtVector3::Normalize(MyMtVector3::Multiply(kBulletSpeed, velocity));
 
 		velocity = MyMtMatrix::TransformNormal(velocity, worldTransform_.matWorld_);
 
@@ -101,11 +113,45 @@ void Player::Rotate() {
 	}
 }
 
+void Player::Reticle2DUpdate(const ViewProjection& viewProjection) {
+	Vector3 positionReticle = GetWorldPosition3DReticle();
+	//
+	Matrix4x4 matViewport = MyMtMatrix::MakeViewportMatrix(0, 0, WinApp::kWindowWidth, WinApp::kWindowHeight, 0, 1);
+	//
+	Matrix4x4 matViewProjectionViewport = 
+		MyMtMatrix::Multiply(viewProjection.matView,MyMtMatrix::Multiply(viewProjection.matProjection,matViewport));
+	//
+	positionReticle = MyMtMatrix::Transform(positionReticle, matViewProjectionViewport);
+	//
+	sprite2DReticle_->SetPosition(Vector2(positionReticle.x, positionReticle.y));
+}
+
+void Player::Reticle3DUpdate() {
+	//自機から３Dベクトルへの距離
+	const float kDistancePlayerTo3DReticle = 50.f;
+	//自機から３Dベクトルのオフセット
+	Vector3 offset = {0, 0, 1.0f};
+	//
+	offset = MyMtMatrix::Transform(offset, worldTransform_.matWorld_);
+	offset = MyMtVector3::Normalize(MyMtVector3::Multiply(kDistancePlayerTo3DReticle, offset));
+	//
+	worldTransform3DReticle_.translation_ = MyMtVector3::Add(worldTransform_.translation_, offset);
+	worldTransform3DReticle_.UpdateMatrix();
+}
+
 Vector3 Player::GetWorldPosition() {
 	Vector3 worldPos;
 	worldPos.x = worldTransform_.matWorld_.m[3][0];
 	worldPos.y = worldTransform_.matWorld_.m[3][1];
 	worldPos.z = worldTransform_.matWorld_.m[3][2];
+	return worldPos;
+}
+
+Vector3 Player::GetWorldPosition3DReticle() {
+	Vector3 worldPos;
+	worldPos.x = worldTransform3DReticle_.matWorld_.m[3][0];
+	worldPos.y = worldTransform3DReticle_.matWorld_.m[3][1];
+	worldPos.z = worldTransform3DReticle_.matWorld_.m[3][2];
 	return worldPos;
 }
 

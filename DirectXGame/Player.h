@@ -4,6 +4,7 @@
 #include "PlayerBullet.h"
 #include <list>
 #include "Collider.h"
+#include "Sprite.h"
 
 class GameScene;
 
@@ -15,17 +16,18 @@ public:
 	/// <summary>
 	/// 初期化
 	/// </summary>
-	void Initialize(Model* model,const Vector3& position);
+	void Initialize(Model* model, uint32_t textureReticle, const Vector3& position);
 
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	void Update(const ViewProjection& viewProjection);
 
 	/// <summary>
 	/// 描画
 	/// </summary>
 	void Draw(ViewProjection& viewProjection);
+	void DrawUI();
 
 	void OnCollision() override;
 
@@ -39,12 +41,19 @@ private:
 	Input* input_ = nullptr;
 	//
 	float inputFloat3[3] = {0, 0, 0};
+	//2Dレティクル
+	Sprite* sprite2DReticle_ = nullptr;
+	//3Dレティクル
+	WorldTransform worldTransform3DReticle_;
 	//関数
 	void Attack();
 	void Rotate();
-	
+	void Reticle2DUpdate(const ViewProjection& viewProjection);
+	void Reticle3DUpdate();
+
 public:
 	Vector3 GetWorldPosition() override;
+	Vector3 GetWorldPosition3DReticle();
 	void SetParent(const WorldTransform* parent);
 	void SetGameScene(GameScene* gameScene) { gameScene_ = gameScene; }
 };

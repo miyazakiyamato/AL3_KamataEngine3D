@@ -40,6 +40,7 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 	//
 	textureHandle_ = TextureManager::Load("./Resources/cube/cube.jpg");
+	textureReticle_ = TextureManager::Load("./Resources/reticle.png");
 	model_ = Model::Create();
 	worldTransform_.Initialize();
 	viewProjection_.farZ = 600.0f;
@@ -55,7 +56,7 @@ void GameScene::Initialize() {
 	//
 	player_ = new Player(); 
 	Vector3 playerPosition = {0.0f, 0.0f, 50.0f};
-	player_->Initialize(Model::CreateFromOBJ("airship", true), playerPosition);
+	player_->Initialize(Model::CreateFromOBJ("airship", true), textureReticle_, playerPosition);
 	player_->SetParent(&railCamera_->GetWorldTransform());
 	player_->SetGameScene(this);
 
@@ -71,7 +72,7 @@ void GameScene::Initialize() {
 void GameScene::Update() { 
 	debugCamera_->Update();
 	//
-	player_->Update();
+	player_->Update(viewProjection_);
 
 	UpdateEnemyPopCommands();
 	for (Enemy* enemy : enemy_) {
@@ -171,7 +172,7 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
-
+	player_->DrawUI();
 	// スプライト描画後処理
 	Sprite::PostDraw();
 
