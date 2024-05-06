@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Enemy.h"
 #include "CollisionManager.h"
+#include "Skydome.h"
 
 /// <summary>
 /// ゲームシーン#
@@ -56,6 +57,8 @@ private: // メンバ変数
 	ViewProjection viewProjection_;
 	//デバッグカメラ
 	DebugCamera* debugCamera_ = nullptr;
+	//
+	Skydome* modelSkydome_ = nullptr;
 	//
 	Player* player_ = nullptr;
 	Enemy* enemy_ = nullptr;
