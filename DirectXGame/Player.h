@@ -45,8 +45,11 @@ private:
 	Sprite* sprite2DReticle_ = nullptr;
 	//3Dレティクル
 	WorldTransform worldTransform3DReticle_;
+
+	bool IsPad_ = false;
 	//関数
 	void Attack();
+	void Move();
 	void Rotate();
 	void Reticle2DUpdate(const ViewProjection& viewProjection);
 	void Reticle3DUpdate();
