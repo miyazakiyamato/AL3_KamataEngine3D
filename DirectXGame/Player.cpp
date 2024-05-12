@@ -7,7 +7,10 @@
 #include "GameScene.h"
 #include "TextureManager.h"
 
-Player::~Player() { delete sprite2DReticle_; }
+Player::~Player() {
+	delete model_;	
+	delete sprite2DReticle_;
+}
 
 void Player::Initialize(Model* model, uint32_t textureReticle, const Vector3& position) {
 	assert(model);

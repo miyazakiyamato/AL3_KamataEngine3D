@@ -3,6 +3,8 @@
 #include "WorldTransform.h"
 class Skydome {
 public:
+	~Skydome();
+
 	void Initialize(Model* model);
 	void Update();
 	void Draw(ViewProjection& viewProjection);

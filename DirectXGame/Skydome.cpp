@@ -1,6 +1,8 @@
 #include "Skydome.h"
 #include <cassert>
 
+Skydome::~Skydome() { delete model_; }
+
 void Skydome::Initialize(Model* model) {
 	assert(model);
 	model_ = model;
