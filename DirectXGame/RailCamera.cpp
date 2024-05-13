@@ -1,7 +1,9 @@
 #include "RailCamera.h"
 #include "MyMtVector3.h"
 #include "MyMtMatrix.h"
+#ifdef _DEBUG
 #include "imgui.h"
+#endif
 
 void RailCamera::Initialize(const Vector3& position, const Vector3& rotate) {
 	worldTransform_.Initialize();
@@ -21,9 +23,11 @@ void RailCamera::Update() {
 	worldTransform_.UpdateMatrix();
 	//
 	viewProjection_.matView = MyMtMatrix::Inverse(worldTransform_.matWorld_);
+#ifdef _DEBUG
 	ImGui::Begin("camera");
 	ImGui::DragFloat3("translation",&worldTransform_.translation_.x, 0.1f);
 	ImGui::DragFloat3("rotate", &worldTransform_.rotation_.x, 0.01f);
 	ImGui::End();
+#endif
 }
 

@@ -1,3 +1,4 @@
+#define NOMINMAX
 #include "Player.h"
 #include <cassert>
 #include "MyMtMatrix.h"
@@ -52,10 +53,10 @@ void Player::Update(const ViewProjection& viewProjection) {
 	const float kMoveLimitX = 34.f;
 	const float kMoveLimitY = 18.5f;
 	//範囲を超えない処理
-	worldTransform_.translation_.x = max(worldTransform_.translation_.x, -kMoveLimitX);
-	worldTransform_.translation_.x = min(worldTransform_.translation_.x, +kMoveLimitX);
-	worldTransform_.translation_.y = max(worldTransform_.translation_.y, -kMoveLimitY);
-	worldTransform_.translation_.y = min(worldTransform_.translation_.y, +kMoveLimitY);
+	worldTransform_.translation_.x = std::max(worldTransform_.translation_.x, -kMoveLimitX);
+	worldTransform_.translation_.x = std::min(worldTransform_.translation_.x, +kMoveLimitX);
+	worldTransform_.translation_.y = std::max(worldTransform_.translation_.y, -kMoveLimitY);
+	worldTransform_.translation_.y = std::min(worldTransform_.translation_.y, +kMoveLimitY);
 	//
 	//worldTransform_.matWorld_ = MyMtMatrix::MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 	//
