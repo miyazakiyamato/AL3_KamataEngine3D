@@ -80,15 +80,15 @@ void Player::Attack() {
 	if (!Input::GetInstance()->GetJoystickState(0, joyState)) {
 		IsPad_ = false;
 	}
-	if (input_->PushKey(DIK_SPACE) && !IsPad_ || joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER && IsPad_) {
+	if (input_->IsPressMouse(0) && !IsPad_ || joyState.Gamepad.wButtons & XINPUT_GAMEPAD_RIGHT_SHOULDER && IsPad_) {
 		// DirectX::XMFLOAT3 position = worldTransform_.translation_;
 		const float kBulletSpeed = 1.0f;
 		Vector3 velocity(0, 0, kBulletSpeed);
-
+		
 		velocity = MyMtVector3::Subtract(GetWorldPosition3DReticle(), GetWorldPosition());
-		velocity = MyMtVector3::Normalize(MyMtVector3::Multiply(kBulletSpeed, velocity));
-
-		velocity = MyMtMatrix::TransformNormal(velocity, worldTransform_.matWorld_);
+		velocity = MyMtVector3::Multiply(kBulletSpeed, MyMtVector3::Normalize(velocity));
+		
+		velocity = MyMtMatrix::TransformNormal(velocity, worldTransform3DReticle_.matWorld_);
 
 		PlayerBullet* newBullet = new PlayerBullet();
 		newBullet->Initialize(model_, GetWorldPosition(), velocity);
@@ -110,14 +110,14 @@ void Player::Move() {
 		}
 	} else {
 		//キーボード
-		if (input_->PushKey(DIK_LEFT)) {
+		if (input_->PushKey(DIK_A)) {
 			move.x -= kCharacterSpeed;
-		} else if (input_->PushKey(DIK_RIGHT)) {
+		} else if (input_->PushKey(DIK_D)) {
 			move.x += kCharacterSpeed;
 		}
-		if (input_->PushKey(DIK_UP)) {
+		if (input_->PushKey(DIK_W)) {
 			move.y += kCharacterSpeed;
-		} else if (input_->PushKey(DIK_DOWN)) {
+		} else if (input_->PushKey(DIK_S)) {
 			move.y -= kCharacterSpeed;
 		}
 	}
@@ -125,13 +125,14 @@ void Player::Move() {
 }
 
 void Player::Rotate() { 
-	const float kRotSpeed = 0.02f;
-	//
-	if (input_->PushKey(DIK_A)) {
-		worldTransform_.rotation_.y -= kRotSpeed;
-	} else if (input_->PushKey(DIK_D)) {
-		worldTransform_.rotation_.y += kRotSpeed;
-	}
+	//const float kRotSpeed = 0.02f;
+	////
+	//if (input_->PushKey(DIK_A)) {
+	//	worldTransform_.rotation_.y -= kRotSpeed;
+	//} else if (input_->PushKey(DIK_D)) {
+	//	worldTransform_.rotation_.y += kRotSpeed;
+	//}
+	//worldTransform_.rotation_ = worldTransform_.parent_->rotation_;
 }
 
 void Player::Reticle2DUpdate(const ViewProjection& viewProjection) {
@@ -171,7 +172,7 @@ void Player::Reticle2DUpdate(const ViewProjection& viewProjection) {
 	Vector3 mouseDirection = MyMtVector3::Subtract(posFar, posNear);
 	mouseDirection = MyMtVector3::Normalize(mouseDirection);
 	//
-	const float kDistanceTestObject = 100.f;
+	const float kDistanceTestObject = 100.0f;
 	worldTransform3DReticle_.translation_ = MyMtVector3::Add(posNear, MyMtVector3::Multiply(kDistanceTestObject, mouseDirection));
 	worldTransform3DReticle_.UpdateMatrix();
 	//

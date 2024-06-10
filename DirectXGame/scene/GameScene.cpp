@@ -66,7 +66,26 @@ void GameScene::Initialize() {
 
 	modelSkydome_ = new Skydome();
 	modelSkydome_->Initialize(Model::CreateFromOBJ("skydome", true));
+
+	primitiveDrawer = PrimitiveDrawer::GetInstance();
+	primitiveDrawer->Initialize();
+	primitiveDrawer->SetViewProjection(&viewProjection_);
+	controlPoints_ = {
+	    {0,  0,  0},
+        {10, 10, 0},
+        {10, 15, 0},
+        {20, 15, 0},
+        {20, 0,  0},
+        {30, 0,  0}
+    };
 	
+	const size_t segmentCount = 100;
+	for (size_t i = 0; i < segmentCount + 1; i++) {
+		float t = 1.0f / segmentCount * i;
+		Vector3 pos = MyMtVector3::CatmullRomPosition(controlPoints_, t);
+		pointsDrawing.push_back(pos);
+	}
+
 	}
 
 void GameScene::Update() { 
@@ -98,6 +117,8 @@ void GameScene::Update() {
 	viewProjection_.matView = railCamera_->GetViewProjection().matView;
 	viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
 	viewProjection_.TransferMatrix();
+
+	
 	// デバッグ表示
 #ifdef _DEBUG
 	if (input_->TriggerKey(DIK_P)) {
@@ -173,6 +194,9 @@ void GameScene::Draw() {
 	/// ここに前景スプライトの描画処理を追加できる
 	/// </summary>
 	player_->DrawUI();
+	for (size_t i = 0; i < pointsDrawing.size() - 1; i++) {
+		primitiveDrawer->DrawLine3d(pointsDrawing.at(i), pointsDrawing.at(i + 1), Vector4(0xff, 0, 0, 0xff));
+	}
 	// スプライト描画後処理
 	Sprite::PostDraw();
 

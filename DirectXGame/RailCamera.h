@@ -10,7 +10,7 @@ public:
 private:
 	WorldTransform worldTransform_;
 	ViewProjection viewProjection_;
-
+	
 public:
 	const WorldTransform& GetWorldTransform() { return worldTransform_; };
 	const ViewProjection& GetViewProjection() { return viewProjection_; }

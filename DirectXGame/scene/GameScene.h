@@ -15,6 +15,7 @@
 #include "Skydome.h"
 #include "RailCamera.h"
 #include <sstream>
+#include <PrimitiveDrawer.h>
 
 /// <summary>
 /// ゲームシーン#
@@ -83,6 +84,11 @@ private: // メンバ変数
 	std::stringstream enemyPopCommands;
 	int32_t enemyPopTimer_ = 0;
 	bool IsEnemyPop_ = false;
+	//
+	std::vector<Vector3> controlPoints_;
+
+	std::vector<Vector3> pointsDrawing;
+	PrimitiveDrawer* primitiveDrawer = nullptr;
 	//
 	void SetAllCollisions();
 	void BulletsUpdate();
